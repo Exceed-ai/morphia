@@ -22,7 +22,8 @@ import static dev.morphia.aggregation.codecs.ExpressionHelper.document;
 
 @SuppressWarnings("unchecked")
 class MorphiaMapPropertyCodecProvider extends MorphiaPropertyCodecProvider {
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public <T> Codec<T> get(TypeWithTypeParameters<T> type, PropertyCodecRegistry registry) {
         if (Map.class.isAssignableFrom(type.getType())) {
             final List<? extends TypeWithTypeParameters<?>> typeParameters = type.getTypeParameters();
@@ -47,12 +48,12 @@ class MorphiaMapPropertyCodecProvider extends MorphiaPropertyCodecProvider {
         return null;
     }
 
-    private static class MapCodec<K, V> implements Codec<Map<K, V>> {
-        private final Class<Map<K, V>> encoderClass;
-        private final Class<K> keyType;
-        private final Codec<V> codec;
+    static class MapCodec<K, V> implements Codec<Map<K, V>> {
+        protected final Class<Map<K, V>> encoderClass;
+        protected final Class<K> keyType;
+        protected final Codec<V> codec;
 
-        MapCodec(Class<Map<K, V>> encoderClass, Class<K> keyType, Codec<V> codec) {
+        protected MapCodec(Class<Map<K, V>> encoderClass, Class<K> keyType, Codec<V> codec) {
             this.encoderClass = encoderClass;
             this.keyType = keyType;
             this.codec = codec;
@@ -95,7 +96,7 @@ class MorphiaMapPropertyCodecProvider extends MorphiaPropertyCodecProvider {
             return encoderClass;
         }
 
-        private Map<K, V> getInstance() {
+        protected Map<K, V> getInstance() {
             if (encoderClass.isInterface()) {
                 return new HashMap<>();
             }
